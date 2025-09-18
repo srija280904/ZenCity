@@ -1,19 +1,43 @@
 import DataLog from '../models/DataLog.js';
+//old
+// export const getDashboardData = async (req, res) => {
+//   try {
+//     const traffic = await DataLog.findOne({ type: 'traffic' }).sort({ timestamp: -1 });
+//     const airQuality = await DataLog.findOne({ type: 'air_quality' }).sort({ timestamp: -1 });
+//     const wasteLevel = await DataLog.findOne({ type: 'waste_level' }).sort({ timestamp: -1 });
 
+//     const trafficHistory = await DataLog.find({ type: 'traffic' }).sort({ timestamp: -1 }).limit(20);
+//     const airQualityHistory = await DataLog.find({ type: 'air_quality' }).sort({ timestamp: -1 }).limit(1);
+
+//     res.json({
+//       latest: { traffic, airQuality, wasteLevel },
+//       history: {
+//         traffic: trafficHistory.reverse(),
+//         airQuality: airQualityHistory,
+//       },
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server Error' });
+//   }
+// };
+//new
 export const getDashboardData = async (req, res) => {
   try {
+    // Fetch latest log for each type
     const traffic = await DataLog.findOne({ type: 'traffic' }).sort({ timestamp: -1 });
     const airQuality = await DataLog.findOne({ type: 'air_quality' }).sort({ timestamp: -1 });
     const wasteLevel = await DataLog.findOne({ type: 'waste_level' }).sort({ timestamp: -1 });
+    const energy = await DataLog.findOne({ type: 'energy' }).sort({ timestamp: -1 }); // Fetch latest energy log
 
+    // Fetch history for charts
     const trafficHistory = await DataLog.find({ type: 'traffic' }).sort({ timestamp: -1 }).limit(20);
-    const airQualityHistory = await DataLog.find({ type: 'air_quality' }).sort({ timestamp: -1 }).limit(1);
+    const energyHistory = await DataLog.find({ type: 'energy' }).sort({ timestamp: -1 }).limit(20); // Fetch energy history
 
     res.json({
-      latest: { traffic, airQuality, wasteLevel },
+      latest: { traffic, airQuality, wasteLevel, energy }, // Add energy to latest
       history: {
         traffic: trafficHistory.reverse(),
-        airQuality: airQualityHistory,
+        energy: energyHistory.reverse(), // Add energy to history
       },
     });
   } catch (error) {
